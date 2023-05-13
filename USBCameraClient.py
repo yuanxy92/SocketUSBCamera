@@ -6,8 +6,7 @@ import socket
 import time
 
 # init socket
-ip_port = ('127.0.0.1', 30000)
-back_log = 5
+ip_port = ('192.168.1.125', 30000)
 buffer_size = 1024
 cli = socket.socket()
 print('Connect server ...')
