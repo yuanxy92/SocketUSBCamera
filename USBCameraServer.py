@@ -6,7 +6,7 @@ import socket
 import time
 
 # init socket
-ip_port = ('127.0.0.1', 30000)
+ip_port = ('192.168.1.125', 30000)
 back_log = 5
 buffer_size = 1024
 ser = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
