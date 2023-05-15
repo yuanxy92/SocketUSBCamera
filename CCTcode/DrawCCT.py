@@ -10,10 +10,14 @@ Created on Sat Jul  6 20:56:18 2019
 
 import numpy as np
 import os
+import cv2
 from PIL import Image
 from PIL import ImageDraw
 import argparse
 import sys
+import matplotlib.pyplot as plt
+from os import listdir
+from os.path import isfile, join
 
 #绘制白色CCT图像的函数，n为等分数
 def DrawCCT_white(N,size,CCT_list):
@@ -69,7 +73,7 @@ def DrawCCT_black(N,size,CCT_list):
     #计算CCT序列代表的最小值
     CCT_value=B2I(CCT_list,N)
     #存放CCT图像的路径
-    CCT_PATH='./CCT_IMG_'+str(N)+'_Black/'
+    CCT_PATH='./CCTCode_img/CCT_IMG_'+str(N)+'_Black/'
     #判断路径是否存在，不存在就新建文件夹
     if_dir_exists=os.path.exists(CCT_PATH)
     if not if_dir_exists:
@@ -79,7 +83,8 @@ def DrawCCT_black(N,size,CCT_list):
     #得到文件路径
     file_path=CCT_PATH+file_name
     if_file_exists=os.path.exists(file_path)
-    if not if_file_exists:
+    if True:
+    # if not if_file_exists:
         print(CCT_list)
         print(CCT_value)
         #生成深黑色绘图画布
@@ -99,25 +104,29 @@ def DrawCCT_black(N,size,CCT_list):
             if CCT_list[i]==1:
                 draw.pieslice((0.125*size,0.125*size,0.875*size,0.875*size),i*unit_angle,(i+1)*unit_angle,fill='black')
         #绘制黑色内圆
-        draw.ellipse((0.25*size, 0.25*size, 0.75*size, 0.75*size), 'white', 'white')
+        draw.ellipse((0.25*size, 0.25*size, 0.75*size, 0.75*size),'white', 'white')
         #绘制白色内圆
-        draw.ellipse((0.375*size, 0.375*size, 0.625*size, 0.625*size), 'black', 'black')
+        draw.ellipse((0.375*size, 0.375*size, 0.625*size, 0.625*size),'black', 'black')
         #绘制中心小圆环点
         draw.ellipse((0.485*size, 0.485*size, 0.515*size, 0.515*size),'white','white')
         #绘制中心小点
         draw.ellipse((0.495*size, 0.495*size, 0.505*size, 0.505*size),'black','black')
         #保存CCT图片
         image.save(file_path)
+        # return np.asarray(image)
 
 def CCT_table(N,size,color):
     max_value=2**N
     CCT_list=[]
+    # CCT_imgs=[]
     for i in range(0,max_value):
         CCT_list=I2B(i,N)
         if color=='black':
-            DrawCCT_black(N,size,CCT_list)
+            img = DrawCCT_black(N,size,CCT_list)
+            # CCT_imgs.append(img)
         if color=='white':
-            DrawCCT_white(N,size,CCT_list)
+            img = DrawCCT_white(N,size,CCT_list)
+            # CCT_imgs.append(img)
     return
 
 #将整数转换为2进制list的函数
@@ -184,7 +193,28 @@ def parse_args():
     args = parser.parse_args()
     return args       
 
+def tile_codes(path):
+    code_files = [f for f in listdir(path) if isfile(join(path, f))]
+    imgs = []
+    for filename in code_files:
+        # process filename to get labels
+        img = cv2.imread(join(path, filename))
+        imgs.append(img)
+    
+    codesize = imgs[0].shape[0]
+    rows = 4
+    cols = 9
+    outimg = np.zeros((rows * codesize, cols * codesize, 3))
+    idx = 0
+    for r in range(rows):
+        for c in range(cols):
+            outimg[r*codesize:(r+1)*codesize, c*codesize:(c+1)*codesize, :] = imgs[idx]
+            idx = idx + 1
+    cv2.imwrite('CCTCode_img/test_8.png', outimg)
+
 #DrawCCT(8,500,[0,0,0,0,0,0,1,1])
 if __name__=='__main__':
     args=parse_args()
     CCT_table(args.bit_n,args.size,args.color)
+    CCT_PATH='./CCTCode_img/CCT_IMG_'+str(args.bit_n)+'_Black/'
+    tile_codes(CCT_PATH)
