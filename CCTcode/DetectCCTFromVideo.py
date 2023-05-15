@@ -16,7 +16,7 @@ def CallCamera(N, R, videoname, color='black'):
 #    cap=cv2.VideoCapture('2.wmv') #调用目录下的视H
     cap=cv2.VideoCapture(videoname)  #调用摄像头‘0’一般是打开电脑自带摄像头，‘1’是打开外部摄像头（只有一个摄像头的情况）
     fourcc = cv2.VideoWriter_fourcc('X', 'V', 'I', 'D')
-    out = cv2.VideoWriter(videoname + 'detected.avi', fourcc, 30.0, (1280,720))
+    out = cv2.VideoWriter(videoname + 'detected.avi', fourcc, 20.0, (720,1280))
     #显示图像
     while True: 
         ret,frame=cap.read()#读取图像(frame就是读取的视频帧，对frame处理就是对整个视频的处理)
