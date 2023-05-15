@@ -208,9 +208,12 @@ def tile_codes(path):
     idx = 0
     for r in range(rows):
         for c in range(cols):
-            outimg[r*codesize:(r+1)*codesize, c*codesize:(c+1)*codesize, :] = imgs[idx]
+            img = imgs[idx]
+            img = cv2.resize(img, [200, 200])
+            img = np.pad(img, ((100, 100), (100, 100), (0, 0)), 'maximum')
+            outimg[r*codesize:(r+1)*codesize, c*codesize:(c+1)*codesize, :] = img
             idx = idx + 1
-    cv2.imwrite('CCTCode_img/test_8.png', outimg)
+    cv2.imwrite('CCTCode_img/test_8_v2.png', outimg)
 
 #DrawCCT(8,500,[0,0,0,0,0,0,1,1])
 if __name__=='__main__':
